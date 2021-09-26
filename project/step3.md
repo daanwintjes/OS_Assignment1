@@ -10,12 +10,15 @@ exit() - terminate the current process
 dup() - create a copy of the file descriptor specified
 chdir() - change to working directory of the current process to the one specified
 
-if (command[first] == exit){
-    return exit();
-};
-if (command[first] == cd){
-    return chdir(command[first+1]);
-};
+if (command[first] == exit)
+    return exit()
+if (command has at least two parts *and* command[first] == cd )
+    return chdir(command[first+1])
+
+for(each command)
+    fork()
+    execute command
+    exit()
 
 
 String [] currentCommand
