@@ -138,13 +138,30 @@ int executeExpression(Expression& expression) {
 	if (expression.commands.size() == 0)
 		return EINVAL;
 
+
 	// Handle intern commands (like 'cd' and 'exit')
+	for (int index = 0; index < expression.commands.size(); index++){ //loop to all commands
+		if (expression.commands[index].parts[0] == "exit"){ //look if one of the commands begins with "exit"
+			exit(0); //exit with status code 0
+		};
+	};
+	for (int index = 0; index < expression.commands.size(); index++){ //loop to all commands
+		if (expression.commands[index].parts.size() >= 2 && expression.commands[index].parts[0] == "cd"){ //look if one of the commands begins with "cd"
+			const char * str = expression.commands[index].parts[1].c_str(); // convert cpp string to c-string
+			chdir(str); // change working directory
+		};
+	};
 	
 	// External commands, executed with fork():
 	// Loop over all commandos, and connect the output and input of the forked processes
+	for (int index = 0; index < expression.commands.size(); index++){
+		fork();
+		executeCommand(expression.commands[index]);
+		exit(0);
+	};
 
 	// For now, we just execute the first command in the expression. Disable.
-	executeCommand(expression.commands[0]);
+	//executeCommand(expression.commands[0]);
 
 	return 0;
 }
