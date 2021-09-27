@@ -16,8 +16,14 @@ if (command has at least two parts *and* command[first] == cd )
     return chdir(command[first+1])
 
 for(each command)
+    create pipe
+    connect write end of pipe to current process
     fork()
+    connect read end of pipe to child process 
     execute command
+    if (another command follows)
+        remove first expression from vector
+        execute expression at the front of vector
     exit()
 
 
