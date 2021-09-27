@@ -142,14 +142,14 @@ int executeExpression(Expression& expression) {
 	// Handle intern commands (like 'cd' and 'exit')
 
 	// Handle exit command 
-	for (int index = 0; index < expression.commands.size(); index++){ //loop to all commands
+	for (uint index = 0; index < expression.commands.size(); index++){ //loop to all commands
 		if (expression.commands[index].parts[0] == "exit"){ //look if one of the commands begins with "exit"
 			exit(EXIT_SUCCESS); //exit with status code 0
 		};
 	};
 
 	// Handle cd command
-	for (int index = 0; index < expression.commands.size(); index++){ //loop to all commands
+	for (uint index = 0; index < expression.commands.size(); index++){ //loop to all commands
 		if (expression.commands[index].parts.size() >= 2 && expression.commands[index].parts[0] == "cd"){ //look if one of the commands begins with "cd"
 			const char * str = expression.commands[index].parts[1].c_str(); // convert cpp string to c-string
 			chdir(str); // change working directory
@@ -159,10 +159,9 @@ int executeExpression(Expression& expression) {
 	// External commands, executed with fork():
 	// Loop over all commandos, and connect the output and input of the forked processes
 
-	for (int index = 0; index < expression.commands.size(); index++){
-
+	for (uint index = 0; index < expression.commands.size(); index++){
 		pid_t pid1 = fork();
-		if(getpid() == pid1){
+		if(pid1 == 0){
 			executeCommand(expression.commands[index]);
 		};
 		exit(EXIT_SUCCESS);
