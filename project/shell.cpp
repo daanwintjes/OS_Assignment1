@@ -159,15 +159,12 @@ int executeExpression(Expression& expression) {
 	// External commands, executed with fork():
 	// Loop over all commandos, and connect the output and input of the forked processes
 
-	if (expression.commands.size() == 1){
-		executeCommand(expression.commands[0]);
-		return 0;
-	}
 	for (int index = 0; index < expression.commands.size(); index++){
+
 		pid_t pid1 = fork();
-		if(getpid() == 0){
-					executeCommand(expression.commands[index]);
-		}
+		if(getpid() == pid1){
+			executeCommand(expression.commands[index]);
+		};
 		exit(EXIT_SUCCESS);
 	};
 
