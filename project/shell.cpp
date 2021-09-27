@@ -19,7 +19,7 @@
 #include <sys/param.h>
 #include <signal.h>
 #include <string.h>
-
+#include <fcntl.h>
 #include <vector>
 
 // although it is good habit, you don't have to type 'std' before many objects by including this line
@@ -144,7 +144,7 @@ int executeExpression(Expression& expression) {
 	// Handle exit command 
 	for (int index = 0; index < expression.commands.size(); index++){ //loop to all commands
 		if (expression.commands[index].parts[0] == "exit"){ //look if one of the commands begins with "exit"
-			exit(0); //exit with status code 0
+			exit(EXIT_SUCCESS); //exit with status code 0
 		};
 	};
 
@@ -158,14 +158,16 @@ int executeExpression(Expression& expression) {
 	
 	// External commands, executed with fork():
 	// Loop over all commandos, and connect the output and input of the forked processes
-	for (int index = 0; index < expression.commands.size(); index++){
+	int index = 0;
+	while (index < expression.commands.size()){
 		fork();
 		executeCommand(expression.commands[index]);
-		exit(0);
+		exit(EXIT_SUCCESS);
+		index++;
 	};
 
 	// For now, we just execute the first command in the expression. Disable.
-	//executeCommand(expression.commands[0]);
+	// executeCommand(expression.commands[0]);
 
 	return 0;
 }
@@ -186,12 +188,11 @@ int normal(bool showPrompt) {
 int step1(bool showPrompt) {
 	// create communication channel shared between the two processes
 	// ...
-
-
 	pid_t child1 = fork();
 	if (child1 == 0) {
 		// redirect standard output (STDOUT_FILENO) to the input of the shared communication channel
 		// free non used resources (why?)
+		
 		Command cmd = {{string("date")}};
 		executeCommand(cmd);
 		// display nice warning that the executable could not be found
@@ -205,6 +206,7 @@ int step1(bool showPrompt) {
 		Command cmd = {{string("tail"), string("-c"), string("5")}};
 		executeCommand(cmd);
 		abort(); // if the executable is not found, we should abort. (why?)
+
 	}
 
 	// free non used resources (why?)
