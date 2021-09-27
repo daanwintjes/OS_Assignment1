@@ -158,12 +158,17 @@ int executeExpression(Expression& expression) {
 	
 	// External commands, executed with fork():
 	// Loop over all commandos, and connect the output and input of the forked processes
-	int index = 0;
-	while (index < expression.commands.size()){
-		fork();
-		executeCommand(expression.commands[index]);
+
+	if (expression.commands.size() == 1){
+		executeCommand(expression.commands[0]);
+		return 0;
+	}
+	for (int index = 0; index < expression.commands.size(); index++){
+		pid_t pid1 = fork();
+		if(getpid() == 0){
+					executeCommand(expression.commands[index]);
+		}
 		exit(EXIT_SUCCESS);
-		index++;
 	};
 
 	// For now, we just execute the first command in the expression. Disable.
