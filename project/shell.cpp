@@ -140,11 +140,15 @@ int executeExpression(Expression& expression) {
 
 
 	// Handle intern commands (like 'cd' and 'exit')
+
+	// Handle exit command 
 	for (int index = 0; index < expression.commands.size(); index++){ //loop to all commands
 		if (expression.commands[index].parts[0] == "exit"){ //look if one of the commands begins with "exit"
 			exit(0); //exit with status code 0
 		};
 	};
+
+	// Handle cd command
 	for (int index = 0; index < expression.commands.size(); index++){ //loop to all commands
 		if (expression.commands[index].parts.size() >= 2 && expression.commands[index].parts[0] == "cd"){ //look if one of the commands begins with "cd"
 			const char * str = expression.commands[index].parts[1].c_str(); // convert cpp string to c-string
@@ -182,6 +186,7 @@ int normal(bool showPrompt) {
 int step1(bool showPrompt) {
 	// create communication channel shared between the two processes
 	// ...
+
 
 	pid_t child1 = fork();
 	if (child1 == 0) {
