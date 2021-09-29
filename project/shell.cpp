@@ -158,21 +158,22 @@ int executeExpression(Expression& expression) {
 	
 	// External commands, executed with fork():
 	// Loop over all commandos, and connect the output and input of the forked processes
-	int pipeA[2];
-	int pipeB[2];
+
 
 	for (uint index = 0; index < expression.commands.size(); index++){
-		
+		if (index == 0 && expression.commands.size() == 1){
+			pid_t pid1 = fork();
+			if(pid1 == 0){	
+				executeCommand(expression.commands[index]);
+				abort();
 
-		/*pid_t pid1 = fork();
-		if(pid1 == 0){
-			executeCommand(expression.commands[index]);
+			};
+			exit(EXIT_SUCCESS);			
 		};
-		exit(EXIT_SUCCESS);*/
 	};
 
 	// For now, we just execute the first command in the expression. Disable.
-	executeCommand(expression.commands[0]);
+	//executeCommand(expression.commands[0]);
 
 	return 0;
 }
@@ -199,28 +200,37 @@ int step1(bool showPrompt) {
 	pid_t child1 = fork();
 	if (child1 == 0) {
 		// redirect standard output (STDOUT_FILENO) to the input of the shared communication channel
-		STDOUT_FILENO > pipeX[1];
+		dup2(pipeX[1], STDOUT_FILENO);
 
 		// free non used resources (why?)
 		close(pipeX[0]);
 
 		Command cmd = {{string("date")}};
 		executeCommand(cmd);
+		close(pipeX[1]);
+
 		// display nice warning that the executable could not be found
+
 		abort(); // if the executable is not found, we should abort. (why?)
+		
 	}
 
 	pid_t child2 = fork();
 	if (child2 == 0) {
 		// redirect the output of the shared communication channel to the standard input (STDIN_FILENO).
-		  STDIN_FILENO <  pipeX[0];
+		dup2(pipeX[0], STDIN_FILENO);
+
 
 		// free non used resources (why?)
 		close(pipeX[1]);
 
 		Command cmd = {{string("tail"), string("-c"), string("5")}};
 		executeCommand(cmd);
+
+		close(pipeX[0]);
+
 		abort(); // if the executable is not found, we should abort. (why?)
+
 
 	}
 
@@ -235,9 +245,9 @@ int step1(bool showPrompt) {
 }
 
 int shell(bool showPrompt) {
-	/*
+	
 	return normal(showPrompt);
-	*/
-	return step1(showPrompt);
-	//*/
+	
+	//return step1(showPrompt);
+	
 }
