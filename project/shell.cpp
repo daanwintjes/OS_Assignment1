@@ -158,13 +158,47 @@ int executeExpression(Expression& expression) {
 	
 	// External commands, executed with fork():
 	// Loop over all commandos, and connect the output and input of the forked processes
+	int pipeA[2];
+	int pipeB[2];
 
 	for (uint index = 0; index < expression.commands.size(); index++){
+		
 		pid_t pid1 = fork();
+		if (pid1 == 0){
+		executeCommand(expression.commands[index]);
+		exit(EXIT_SUCCESS);
+		};
+
+		/*if(index == 0){
+			pid_t pid1 = fork();
+			if(pid1 == 0){
+				pipe(pipeA);
+				pipeA[1] = executeCommand(expression.commands[index]);
+			};
+			exit(EXIT_SUCCESS);
+			//first command
+		}
+		else if(index == expression.commands.size() - 1){
+			pid_t pid1 = fork();
+			if(pid1 == 0){
+				expression.commands[index].parts.(pipeA[0]);
+				pipeA[1] = executeCommand(expression.commands[index]);
+				pipe(pipeA);
+				
+			};
+			exit(EXIT_SUCCESS);
+			//last command
+		}
+		else {
+			//middle command
+		};*/
+
+
+		/*pid_t pid1 = fork();
 		if(pid1 == 0){
 			executeCommand(expression.commands[index]);
 		};
-		exit(EXIT_SUCCESS);
+		exit(EXIT_SUCCESS);*/
 	};
 
 	// For now, we just execute the first command in the expression. Disable.
