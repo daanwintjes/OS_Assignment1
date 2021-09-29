@@ -163,36 +163,6 @@ int executeExpression(Expression& expression) {
 
 	for (uint index = 0; index < expression.commands.size(); index++){
 		
-		pid_t pid1 = fork();
-		if (pid1 == 0){
-		executeCommand(expression.commands[index]);
-		exit(EXIT_SUCCESS);
-		};
-
-		/*if(index == 0){
-			pid_t pid1 = fork();
-			if(pid1 == 0){
-				pipe(pipeA);
-				pipeA[1] = executeCommand(expression.commands[index]);
-			};
-			exit(EXIT_SUCCESS);
-			//first command
-		}
-		else if(index == expression.commands.size() - 1){
-			pid_t pid1 = fork();
-			if(pid1 == 0){
-				expression.commands[index].parts.(pipeA[0]);
-				pipeA[1] = executeCommand(expression.commands[index]);
-				pipe(pipeA);
-				
-			};
-			exit(EXIT_SUCCESS);
-			//last command
-		}
-		else {
-			//middle command
-		};*/
-
 
 		/*pid_t pid1 = fork();
 		if(pid1 == 0){
@@ -202,7 +172,7 @@ int executeExpression(Expression& expression) {
 	};
 
 	// For now, we just execute the first command in the expression. Disable.
-	// executeCommand(expression.commands[0]);
+	executeCommand(expression.commands[0]);
 
 	return 0;
 }
@@ -223,11 +193,17 @@ int normal(bool showPrompt) {
 int step1(bool showPrompt) {
 	// create communication channel shared between the two processes
 	// ...
+	int pipeX[2];
+	pipe(pipeX);
+
 	pid_t child1 = fork();
 	if (child1 == 0) {
 		// redirect standard output (STDOUT_FILENO) to the input of the shared communication channel
+		STDOUT_FILENO > pipeX[1];
+
 		// free non used resources (why?)
-		
+		close(pipeX[0]);
+
 		Command cmd = {{string("date")}};
 		executeCommand(cmd);
 		// display nice warning that the executable could not be found
@@ -237,7 +213,11 @@ int step1(bool showPrompt) {
 	pid_t child2 = fork();
 	if (child2 == 0) {
 		// redirect the output of the shared communication channel to the standard input (STDIN_FILENO).
+		  STDIN_FILENO <  pipeX[0];
+
 		// free non used resources (why?)
+		close(pipeX[1]);
+
 		Command cmd = {{string("tail"), string("-c"), string("5")}};
 		executeCommand(cmd);
 		abort(); // if the executable is not found, we should abort. (why?)
@@ -245,6 +225,9 @@ int step1(bool showPrompt) {
 	}
 
 	// free non used resources (why?)
+	close(pipeX[0]);
+	close(pipeX[1]);
+
 	// wait on child processes to finish (why both?)
 	waitpid(child1, nullptr, 0);
 	waitpid(child2, nullptr, 0);
@@ -252,9 +235,9 @@ int step1(bool showPrompt) {
 }
 
 int shell(bool showPrompt) {
-	//*
+	/*
 	return normal(showPrompt);
-	/*/
+	*/
 	return step1(showPrompt);
 	//*/
 }
