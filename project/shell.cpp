@@ -166,12 +166,10 @@ int executeExpression(Expression& expression) {
 			if(pid1 == 0){	
 				executeCommand(expression.commands[index]);
 				abort();
-
 			};
-			exit(EXIT_SUCCESS);			
+					
 		};
 	};
-
 	// For now, we just execute the first command in the expression. Disable.
 	//executeCommand(expression.commands[0]);
 
