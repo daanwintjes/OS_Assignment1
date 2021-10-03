@@ -153,6 +153,7 @@ int executeExpression(Expression& expression) {
 		if (expression.commands[index].parts.size() >= 2 && expression.commands[index].parts[0] == "cd"){ //look if one of the commands begins with "cd"
 			const char * str = expression.commands[index].parts[1].c_str(); // convert cpp string to c-string
 			chdir(str); // change working directory
+			
 		};
 	};
 	
